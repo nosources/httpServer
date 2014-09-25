@@ -66,6 +66,7 @@ int http_session(int *connect_fd, struct sockaddr_in *client_addr)
 				}
 				else if(read_bytes > 0)		/* there are some data from client */
 				{
+					printf("receive data is %s", recv_buf);
 					if(is_http_protocol(recv_buf) == 0)	/* check is it HTTP protocol */
 					{
 						fprintf(stderr, "Not http protocol.\n");
