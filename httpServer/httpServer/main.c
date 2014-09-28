@@ -16,14 +16,16 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include "session.h"
 int main(int argc, const char * argv[])
 {
 
+    init_mime_type_hm();
     int listen_fd;
     int connect_fd;
     struct sockaddr_in server_addr;
     bzero(&server_addr, sizeof(struct sockaddr_in));
-    if (!init_socket(&listen_fd, &server_addr)) {
+    if (-1 ==init_socket(&listen_fd, &server_addr)) {
         printf("error init socket.");
         exit(EXIT_FAILURE);
     }
@@ -44,6 +46,14 @@ int main(int argc, const char * argv[])
             continue;
         }else if(pid == 0){
             close(listen_fd);
+            printf("pid is %d", getpid());
+            if(http_session(&connect_fd, &client_addr) == -1)
+			{
+				perror("http_session() error. in webserver.c");
+				shutdown(connect_fd, SHUT_RDWR);
+				printf("pid %d loss connection to %s\n", getpid(), inet_ntoa(client_addr.sin_addr));
+				exit(EXIT_FAILURE);		/* exit from child process, stop this http session  */
+			}
             printf("pid is %d, http sesson from %s:%d", getpid(), inet_ntoa(client_addr.sin_addr), htons(client_addr.sin_port));
             shutdown(connect_fd, SHUT_RDWR);
             exit(EXIT_SUCCESS);
