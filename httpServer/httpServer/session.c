@@ -17,10 +17,11 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "hashmap.h"
+#include <time.h>
 
 struct hashmap hm;
 void init_mime_type_hm(){
-    hashmap_init(&hm, 0, hash_str, cmp_str, NULL, NULL);
+    hashmap_init(&hm, 0, hash_text, cmp_text, NULL, NULL);
     hashmap_put(&hm, "html", "text/html");
     hashmap_put(&hm, "htm", "text/html");
     hashmap_put(&hm, "jpeg", "image/jpeg");
